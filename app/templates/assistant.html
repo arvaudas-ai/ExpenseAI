@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Assistant | ExpenseAI</title>
+    <link rel="stylesheet" href="/static/css/styles.css" />
+  </head>
+  <body>
+    <main class="page-shell" data-page="assistant">
+      <div class="page-header">
+        <div>
+          <p class="eyebrow">Your spending companion</p>
+          <h1>Financial assistant</h1>
+          <p class="page-subtitle">Ask questions about your ExpenseAI spending. Answers are based on your account data.</p>
+        </div>
+        <button id="logout-btn" type="button" class="secondary">Log out</button>
+      </div>
+
+      <nav class="app-nav" aria-label="Primary navigation">
+        <a href="/dashboard">Dashboard</a><a href="/expenses">Expenses</a><a href="/categories">Categories</a><a href="/analytics">Analytics</a><a class="active" href="/assistant">Assistant</a><a href="/settings">Settings</a>
+      </nav>
+
+      <section class="assistant-layout page-panel">
+        <div class="assistant-intro">
+          <p class="eyebrow">Ask naturally</p>
+          <h2>Make sense of your spending</h2>
+          <p>Try a suggested question or ask about totals, categories, trends, and your largest expenses.</p>
+          <div class="assistant-suggestions" aria-label="Suggested questions">
+            <button type="button" class="suggestion-button">How much did I spend this month?</button>
+            <button type="button" class="suggestion-button">What did I spend the most on?</button>
+            <button type="button" class="suggestion-button">Compare this month with last month</button>
+            <button type="button" class="suggestion-button">Summarize my spending</button>
+            <button type="button" class="suggestion-button">What are my biggest expenses?</button>
+          </div>
+        </div>
+
+        <div class="assistant-chat" aria-label="Financial assistant conversation">
+          <div id="chat-messages" class="chat-messages" aria-live="polite">
+            <div class="chat-message assistant-message">
+              <span class="chat-label">ExpenseAI assistant</span>
+              <p>Hi. I can help you understand your ExpenseAI spending. What would you like to know?</p>
+            </div>
+          </div>
+          <div id="assistant-error" class="form-message error" aria-live="assertive"></div>
+          <form id="assistant-form" class="assistant-form" novalidate>
+            <label class="sr-only" for="assistant-message">Ask about your spending</label>
+            <textarea id="assistant-message" rows="3" maxlength="1000" placeholder="Ask about your spending..." required></textarea>
+            <div class="assistant-form-footer">
+              <span class="input-hint">Answers use your private ExpenseAI data.</span>
+              <button id="assistant-send-btn" type="submit">Send question</button>
+            </div>
+          </form>
+        </div>
+      </section>
+    </main>
+    <script src="/static/js/assistant.js"></script>
+  </body>
+</html>

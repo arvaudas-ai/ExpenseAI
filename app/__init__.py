@@ -1,0 +1,1 @@
+"""ExpenseAI application package."""

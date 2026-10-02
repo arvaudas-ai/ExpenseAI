@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register | ExpenseAI</title>
+    <link rel="stylesheet" href="/static/css/styles.css" />
+  </head>
+  <body>
+    <main class="auth-container">
+      <h1>Create your account</h1>
+      <form id="register-form" novalidate>
+        <div class="field-group">
+          <label for="name">Full name</label>
+          <input id="name" name="name" type="text" autocomplete="name" required />
+        </div>
+
+        <div class="field-group">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="email" required />
+        </div>
+
+        <div class="field-group">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" autocomplete="new-password" minlength="8" required />
+        </div>
+
+        <div class="field-group">
+          <label for="password_confirmation">Confirm password</label>
+          <input id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" minlength="8" required />
+        </div>
+
+        <button id="register-btn" type="submit">Create Account</button>
+      </form>
+
+      <div id="form-message" class="form-message" aria-live="polite"></div>
+    </main>
+
+    <script src="/static/js/register.js"></script>
+  </body>
+</html>

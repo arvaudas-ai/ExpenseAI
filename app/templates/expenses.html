@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Expenses | ExpenseAI</title>
+    <link rel="stylesheet" href="/static/css/styles.css" />
+  </head>
+  <body>
+    <main class="page-shell" data-page="expenses">
+      <div class="page-header">
+        <div>
+          <p class="eyebrow">Track every detail</p>
+          <h1>Expenses</h1>
+          <p class="page-subtitle">Add, review, and refine your spending history.</p>
+        </div>
+        <button id="logout-btn" type="button" class="secondary">Log out</button>
+      </div>
+      <nav class="app-nav" aria-label="Primary navigation">
+        <a href="/dashboard">Dashboard</a><a class="active" href="/expenses">Expenses</a><a href="/categories">Categories</a><a href="/analytics">Analytics</a><a href="/assistant">Assistant</a><a href="/settings">Settings</a>
+      </nav>
+      <div id="form-message" class="form-message" aria-live="polite"></div>
+
+      <section class="page-panel add-expense-panel">
+        <div class="panel-heading">
+          <div><p class="eyebrow">New transaction</p><h2>Add an expense</h2></div>
+          <span id="expense-currency" class="panel-stat">USD</span>
+        </div>
+      <form id="expense-form" class="expense-form-grid" novalidate>
+        <div class="field-group">
+          <label for="category-id">Category</label>
+          <select id="category-id" name="category_id" required>
+            <option value="">-- Select a category --</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label for="amount">Amount</label>
+          <input id="amount" name="amount" type="number" step="0.01" min="0.01" required />
+        </div>
+
+        <div class="field-group">
+          <label for="description">Description</label>
+          <input id="description" name="description" type="text" required />
+        </div>
+
+        <div class="field-group">
+          <label for="date">Date</label>
+          <input id="date" name="date" type="date" required />
+        </div>
+
+        <div class="field-group">
+          <label for="payment-method">Payment method</label>
+          <select id="payment-method" name="payment_method" required>
+            <option value="cash">Cash</option>
+            <option value="credit_card">Credit Card</option>
+            <option value="debit_card">Debit Card</option>
+            <option value="bank_transfer">Bank Transfer</option>
+            <option value="digital_wallet">Digital Wallet</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div class="row-actions expense-form-actions"><button id="submit-expense-btn" type="submit">Add expense</button></div>
+      </form>
+      </section>
+
+      <section class="page-panel expenses-list-panel">
+        <div class="panel-heading"><div><p class="eyebrow">Your history</p><h2>All expenses</h2></div><span class="panel-stat">Review and manage</span></div>
+        <form id="expense-filters" class="expense-tools" aria-label="Expense search, filters, and sorting">
+          <div class="field-group"><label for="expense-search">Search</label><input id="expense-search" type="search" maxlength="100" placeholder="Description, category, or payment" /></div>
+          <div class="field-group"><label for="expense-start-date">From date</label><input id="expense-start-date" type="date" /></div>
+          <div class="field-group"><label for="expense-end-date">To date</label><input id="expense-end-date" type="date" /></div>
+          <div class="field-group"><label for="expense-filter-category">Category</label><select id="expense-filter-category"><option value="">All categories</option></select></div>
+          <div class="field-group"><label for="expense-filter-payment">Payment method</label><select id="expense-filter-payment"><option value="">All methods</option><option value="cash">Cash</option><option value="credit_card">Credit card</option><option value="debit_card">Debit card</option><option value="bank_transfer">Bank transfer</option><option value="digital_wallet">Digital wallet</option><option value="other">Other</option></select></div>
+          <div class="field-group"><label for="expense-amount-min">Minimum amount</label><input id="expense-amount-min" type="number" min="0" step="0.01" /></div>
+          <div class="field-group"><label for="expense-amount-max">Maximum amount</label><input id="expense-amount-max" type="number" min="0.01" step="0.01" /></div>
+          <div class="field-group"><label for="expense-sort">Sort by</label><select id="expense-sort"><option value="date:desc">Newest date</option><option value="date:asc">Oldest date</option><option value="amount:desc">Highest amount</option><option value="amount:asc">Lowest amount</option><option value="category:asc">Category A-Z</option><option value="category:desc">Category Z-A</option><option value="created_at:desc">Recently added</option><option value="updated_at:desc">Recently updated</option></select></div>
+          <div class="filter-actions expense-filter-actions"><button type="submit">Apply filters</button><button id="clear-expense-filters" type="button" class="secondary">Clear</button></div>
+        </form>
+        <p id="expense-list-message" class="form-message" aria-live="polite"></p>
+        <div id="expenses-empty" class="empty-state">No expenses yet. Add your first transaction above.</div>
+        <div class="table-wrap"><table id="expenses-table" class="expenses-table">
+          <thead>
+            <tr>
+              <th style="text-align:left; padding:8px;">Amount</th>
+              <th style="text-align:left; padding:8px;">Category</th>
+              <th style="text-align:left; padding:8px;">Description</th>
+              <th style="text-align:left; padding:8px;">Date</th>
+              <th>Payment</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="expenses-body"></tbody>
+        </table></div>
+        <div class="expense-pagination" aria-label="Expense result pages">
+          <button id="expenses-prev-page" type="button" class="secondary" disabled>Previous</button>
+          <span id="expenses-page-label" aria-live="polite">Page 1</span>
+          <button id="expenses-next-page" type="button" class="secondary" disabled>Next</button>
+          <label for="expenses-page-size">Rows</label>
+          <select id="expenses-page-size"><option value="25">25</option><option value="50" selected>50</option><option value="100">100</option></select>
+        </div>
+      </section>
+    </main>
+
+    <!-- Modal for editing expense -->
+    <div id="edit-expense-modal" class="modal" hidden>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Edit Expense</h2>
+          <button id="close-expense-modal" type="button" class="modal-close">&times;</button>
+        </div>
+        <form id="edit-expense-form" novalidate>
+          <input id="edit-expense-id" type="hidden" />
+
+          <div class="field-group">
+            <label for="edit-category-id">Category</label>
+            <select id="edit-category-id" name="category_id" required>
+              <option value="">-- Select a category --</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label for="edit-amount">Amount</label>
+            <input id="edit-amount" name="amount" type="number" step="0.01" min="0.01" required />
+          </div>
+
+          <div class="field-group">
+            <label for="edit-description">Description</label>
+            <input id="edit-description" name="description" type="text" required />
+          </div>
+
+          <div class="field-group">
+            <label for="edit-date">Date</label>
+            <input id="edit-date" name="date" type="date" required />
+          </div>
+
+          <div class="field-group">
+            <label for="edit-payment-method">Payment method</label>
+            <select id="edit-payment-method" name="payment_method" required>
+              <option value="cash">Cash</option>
+              <option value="credit_card">Credit Card</option>
+              <option value="debit_card">Debit Card</option>
+              <option value="bank_transfer">Bank Transfer</option>
+              <option value="digital_wallet">Digital Wallet</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="modal-actions">
+            <button id="save-expense-btn" type="submit" class="primary">Save Changes</button>
+            <button id="delete-expense-btn" type="button" class="danger">Delete Expense</button>
+            <button type="button" class="secondary" onclick="document.getElementById('edit-expense-modal').hidden = true">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="/static/js/expenses.js"></script>
+  </body>
+</html>

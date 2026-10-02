@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile Settings | ExpenseAI</title>
+    <link rel="stylesheet" href="/static/css/styles.css" />
+  </head>
+  <body>
+    <main class="page-shell" data-page="settings">
+      <div class="page-header">
+        <div><p class="eyebrow">Your account</p><h1>Settings</h1><p class="page-subtitle">Keep your profile and preferences up to date.</p></div>
+        <button id="logout-btn" type="button" class="secondary">Log out</button>
+      </div>
+      <nav class="app-nav" aria-label="Primary navigation">
+        <a href="/dashboard">Dashboard</a><a href="/expenses">Expenses</a><a href="/categories">Categories</a><a href="/analytics">Analytics</a><a href="/assistant">Assistant</a><a class="active" href="/settings">Settings</a>
+      </nav>
+      <div id="form-message" class="form-message" aria-live="polite"></div>
+
+      <section class="page-panel">
+        <div class="panel-heading"><div><p class="eyebrow">Account details</p><h2>Profile and preferences</h2></div></div>
+      <form id="profile-form" class="settings-form-grid" novalidate>
+        <div class="field-group">
+          <label for="name">Name</label>
+          <input id="name" name="name" type="text" required />
+        </div>
+
+        <div class="field-group">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required />
+        </div>
+
+        <div class="field-group">
+          <label for="currency">Currency</label>
+          <select id="currency" name="currency">
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="INR">INR</option>
+            <option value="JPY">JPY</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label for="theme">Theme</label>
+          <select id="theme" name="theme">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+            <option value="system">System</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label>
+            <input id="budget-alerts" name="budget-alerts" type="checkbox" />
+            Enable budget alerts
+          </label>
+        </div>
+
+        <div class="row-actions"><button id="save-profile-btn" type="submit">Save changes</button></div>
+      </form>
+      </section>
+
+      <section class="page-panel">
+        <div class="panel-heading"><div><p class="eyebrow">Security</p><h2>Change password</h2></div></div>
+        <form id="password-form" novalidate>
+          <div class="field-group">
+            <label for="current-password">Current password</label>
+            <input id="current-password" name="current_password" type="password" required />
+          </div>
+
+          <div class="field-group">
+            <label for="new-password">New password</label>
+            <input id="new-password" name="new_password" type="password" required />
+          </div>
+
+          <div class="field-group">
+            <label for="confirm-password">Confirm new password</label>
+            <input id="confirm-password" name="confirm_new_password" type="password" required />
+          </div>
+
+          <button id="change-password-btn" type="submit" class="secondary">Update Password</button>
+        </form>
+      </section>
+    </main>
+
+    <script src="/static/js/settings.js"></script>
+  </body>
+</html>

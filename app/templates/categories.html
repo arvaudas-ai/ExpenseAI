@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Categories | ExpenseAI</title>
+    <link rel="stylesheet" href="/static/css/styles.css" />
+  </head>
+  <body>
+    <main class="page-shell" data-page="categories">
+      <div class="page-header">
+        <div><p class="eyebrow">Make it yours</p><h1>Categories</h1><p class="page-subtitle">Organize spending with labels that fit your life.</p></div>
+        <button id="logout-btn" type="button" class="secondary">Log out</button>
+      </div>
+      <nav class="app-nav" aria-label="Primary navigation">
+        <a href="/dashboard">Dashboard</a><a href="/expenses">Expenses</a><a class="active" href="/categories">Categories</a><a href="/analytics">Analytics</a><a href="/assistant">Assistant</a><a href="/settings">Settings</a>
+      </nav>
+
+      <div id="form-message" class="form-message" aria-live="polite"></div>
+
+      <!-- Create New Category Section -->
+      <section class="page-panel">
+        <div class="panel-heading"><div><p class="eyebrow">Custom labels</p><h2>Create a category</h2></div></div>
+        <form id="create-category-form" class="category-form-grid" novalidate>
+          <div class="field-group">
+            <label for="category-name">Category Name</label>
+            <input id="category-name" name="name" type="text" required placeholder="e.g., Coffee" maxlength="100" />
+          </div>
+
+          <div class="field-group">
+            <label for="category-icon">Icon</label>
+            <select id="category-icon" name="icon" required>
+              <option value="">-- Select an icon --</option>
+              <option value="food">🍔 Food</option>
+              <option value="transport">🚗 Transport</option>
+              <option value="utilities">💡 Utilities</option>
+              <option value="entertainment">🎬 Entertainment</option>
+              <option value="shopping">🛍️ Shopping</option>
+              <option value="health">⚕️ Health</option>
+              <option value="education">📚 Education</option>
+              <option value="travel">✈️ Travel</option>
+              <option value="dining">🍽️ Dining</option>
+              <option value="groceries">🛒 Groceries</option>
+              <option value="gas">⛽ Gas</option>
+              <option value="electricity">⚡ Electricity</option>
+              <option value="water">💧 Water</option>
+              <option value="internet">📶 Internet</option>
+              <option value="phone">📱 Phone</option>
+              <option value="movie">🎥 Movie</option>
+              <option value="music">🎵 Music</option>
+              <option value="books">📖 Books</option>
+              <option value="sports">⚽ Sports</option>
+              <option value="gym">🏋️ Gym</option>
+              <option value="medical">🏥 Medical</option>
+              <option value="pharmacy">💊 Pharmacy</option>
+              <option value="doctor">👨‍⚕️ Doctor</option>
+              <option value="school">🎓 School</option>
+              <option value="tuition">🎓 Tuition</option>
+              <option value="plane">✈️ Plane</option>
+              <option value="hotel">🏨 Hotel</option>
+              <option value="taxi">🚕 Taxi</option>
+              <option value="other">📌 Other</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label for="category-color">Color</label>
+            <div class="color-picker-wrapper">
+              <input id="category-color" name="color" type="hidden" required value="#FF6B6B" />
+              <div id="color-palette" class="color-palette">
+                <button type="button" class="color-option" data-color="#FF6B6B" style="background-color: #FF6B6B;" title="Red"></button>
+                <button type="button" class="color-option" data-color="#FF8A65" style="background-color: #FF8A65;" title="Orange"></button>
+                <button type="button" class="color-option" data-color="#FFD93D" style="background-color: #FFD93D;" title="Yellow"></button>
+                <button type="button" class="color-option" data-color="#6BCB77" style="background-color: #6BCB77;" title="Green"></button>
+                <button type="button" class="color-option" data-color="#4D96FF" style="background-color: #4D96FF;" title="Blue"></button>
+                <button type="button" class="color-option" data-color="#9B59B6" style="background-color: #9B59B6;" title="Purple"></button>
+                <button type="button" class="color-option" data-color="#E74C3C" style="background-color: #E74C3C;" title="Dark Red"></button>
+                <button type="button" class="color-option" data-color="#3498DB" style="background-color: #3498DB;" title="Bright Blue"></button>
+                <button type="button" class="color-option" data-color="#2ECC71" style="background-color: #2ECC71;" title="Bright Green"></button>
+                <button type="button" class="color-option" data-color="#E91E63" style="background-color: #E91E63;" title="Pink"></button>
+                <button type="button" class="color-option" data-color="#00BCD4" style="background-color: #00BCD4;" title="Cyan"></button>
+                <button type="button" class="color-option" data-color="#795548" style="background-color: #795548;" title="Brown"></button>
+              </div>
+            </div>
+          </div>
+
+          <button id="create-category-btn" type="submit" class="primary">Create Category</button>
+        </form>
+      </section>
+
+      <!-- Categories List Section -->
+      <section class="page-panel">
+        <div class="panel-heading"><div><p class="eyebrow">Your library</p><h2>All categories</h2></div><span class="panel-stat">Defaults included</span></div>
+        <div id="categories-list" class="categories-grid">
+          <!-- Categories will be populated here -->
+          <p class="loading-message">Loading categories...</p>
+        </div>
+      </section>
+    </main>
+
+    <!-- Modal for editing category -->
+    <div id="edit-modal" class="modal" hidden>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Edit Category</h2>
+          <button id="close-modal" type="button" class="modal-close">&times;</button>
+        </div>
+        <form id="edit-category-form" novalidate>
+          <input id="edit-category-id" type="hidden" />
+
+          <div class="field-group">
+            <label for="edit-category-name">Category Name</label>
+            <input id="edit-category-name" name="name" type="text" required maxlength="100" />
+          </div>
+
+          <div class="field-group">
+            <label for="edit-category-icon">Icon</label>
+            <select id="edit-category-icon" name="icon" required>
+              <option value="food">🍔 Food</option>
+              <option value="transport">🚗 Transport</option>
+              <option value="utilities">💡 Utilities</option>
+              <option value="entertainment">🎬 Entertainment</option>
+              <option value="shopping">🛍️ Shopping</option>
+              <option value="health">⚕️ Health</option>
+              <option value="education">📚 Education</option>
+              <option value="travel">✈️ Travel</option>
+              <option value="dining">🍽️ Dining</option>
+              <option value="groceries">🛒 Groceries</option>
+              <option value="gas">⛽ Gas</option>
+              <option value="electricity">⚡ Electricity</option>
+              <option value="water">💧 Water</option>
+              <option value="internet">📶 Internet</option>
+              <option value="phone">📱 Phone</option>
+              <option value="movie">🎥 Movie</option>
+              <option value="music">🎵 Music</option>
+              <option value="books">📖 Books</option>
+              <option value="sports">⚽ Sports</option>
+              <option value="gym">🏋️ Gym</option>
+              <option value="medical">🏥 Medical</option>
+              <option value="pharmacy">💊 Pharmacy</option>
+              <option value="doctor">👨‍⚕️ Doctor</option>
+              <option value="school">🎓 School</option>
+              <option value="tuition">🎓 Tuition</option>
+              <option value="plane">✈️ Plane</option>
+              <option value="hotel">🏨 Hotel</option>
+              <option value="taxi">🚕 Taxi</option>
+              <option value="other">📌 Other</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label>Color</label>
+            <div class="color-picker-wrapper">
+              <input id="edit-category-color" name="color" type="hidden" required />
+              <div id="edit-color-palette" class="color-palette">
+                <button type="button" class="color-option" data-color="#FF6B6B" style="background-color: #FF6B6B;" title="Red"></button>
+                <button type="button" class="color-option" data-color="#FF8A65" style="background-color: #FF8A65;" title="Orange"></button>
+                <button type="button" class="color-option" data-color="#FFD93D" style="background-color: #FFD93D;" title="Yellow"></button>
+                <button type="button" class="color-option" data-color="#6BCB77" style="background-color: #6BCB77;" title="Green"></button>
+                <button type="button" class="color-option" data-color="#4D96FF" style="background-color: #4D96FF;" title="Blue"></button>
+                <button type="button" class="color-option" data-color="#9B59B6" style="background-color: #9B59B6;" title="Purple"></button>
+                <button type="button" class="color-option" data-color="#E74C3C" style="background-color: #E74C3C;" title="Dark Red"></button>
+                <button type="button" class="color-option" data-color="#3498DB" style="background-color: #3498DB;" title="Bright Blue"></button>
+                <button type="button" class="color-option" data-color="#2ECC71" style="background-color: #2ECC71;" title="Bright Green"></button>
+                <button type="button" class="color-option" data-color="#E91E63" style="background-color: #E91E63;" title="Pink"></button>
+                <button type="button" class="color-option" data-color="#00BCD4" style="background-color: #00BCD4;" title="Cyan"></button>
+                <button type="button" class="color-option" data-color="#795548" style="background-color: #795548;" title="Brown"></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button id="save-category-btn" type="submit" class="primary">Save Changes</button>
+            <button id="delete-category-btn" type="button" class="danger">Delete Category</button>
+            <button type="button" class="secondary" onclick="document.getElementById('edit-modal').hidden = true">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="/static/js/categories.js"></script>
+  </body>
+</html>
