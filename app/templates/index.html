@@ -1,21 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ExpenseAI</title>
-    <link rel="stylesheet" href="/static/css/styles.css" />
-  </head>
-  <body>
-    <main class="container">
-      <h1>ExpenseAI</h1>
-      <p>Track your spending with your own expense assistant.</p>
-      <p>Create an account, add expenses, and see where your money goes.</p>
-      <p>
-        <a href="/register">Create an account</a>
-        &nbsp;·&nbsp;
-        <a href="/login">Sign in</a>
-      </p>
-    </main>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Track expenses in color</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,650&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      font-family: "Nunito", sans-serif;
+      color: #5c463c;
+      background: #fbf6ef;
+      overflow-x: hidden;
+    }
+    .wash {
+      position: fixed; inset: 0; pointer-events: none;
+      background:
+        radial-gradient(420px 320px at 8% 8%, #f8c9d6 0%, transparent 70%),
+        radial-gradient(520px 280px at 0% 100%, #ffe7b0 0%, transparent 68%),
+        radial-gradient(480px 340px at 100% 88%, #f6c9d4 0%, transparent 70%);
+    }
+    .blob { position: fixed; pointer-events: none; z-index: 0; }
+    .blob-tl { width: 280px; height: 220px; left: -40px; top: 70px; background: #f7c9d6; border-radius: 58% 42% 62% 38% / 46% 58% 42% 54%; opacity: 0.85; }
+    .blob-bl { width: 340px; height: 180px; left: -30px; bottom: -20px; background: #ffe3a8; border-radius: 60% 40% 50% 50% / 70% 40% 60% 30%; opacity: 0.9; }
+    .blob-br { width: 360px; height: 240px; right: -80px; bottom: 20px; background: #f8d0dc; border-radius: 48% 52% 40% 60% / 52% 38% 62% 48%; opacity: 0.8; }
+    .orb { position: fixed; left: 46px; top: 28px; width: 54px; height: 54px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #ffe7b8, #f6b7c8); pointer-events: none; }
+    .dots { position: fixed; width: 74px; height: 74px; background-image: radial-gradient(#e7c7b4 1.4px, transparent 1.6px); background-size: 12px 12px; pointer-events: none; opacity: 0.7; }
+    .dots-tr { right: 54px; top: 168px; }
+    .dots-bl { left: 78px; bottom: 48px; }
+    .heart, .star { position: fixed; pointer-events: none; font-size: 22px; }
+    .heart { right: 36px; top: 46%; color: #f3b7c8; }
+    .star { right: 70px; bottom: 54px; color: #f0c56a; font-size: 26px; }
+    header, main { position: relative; z-index: 1; }
+    header { max-width: 1180px; margin: 0 auto; padding: 28px 36px 0; display: flex; justify-content: flex-end; }
+    nav { display: flex; align-items: center; gap: 28px; }
+    nav a { color: #6a5146; text-decoration: none; font-weight: 700; font-size: 1.02rem; }
+    .signin { background: #f8e7bf; color: #6a5146; border-radius: 999px; padding: 10px 18px; }
+    .create { background: #7a5644; color: #fffaf6; border-radius: 999px; padding: 12px 18px; }
+    .hero { max-width: 1180px; margin: 0 auto; padding: 54px 48px 70px; display: grid; grid-template-columns: 1fr 1fr; gap: 42px; align-items: center; }
+    h1 { font-family: "Fraunces", serif; font-weight: 560; font-size: clamp(3.4rem, 6vw, 5.3rem); line-height: 0.92; color: #6b4b3a; letter-spacing: -0.03em; }
+    h1 .in { color: #f0b7c4; display: inline-block; margin-right: 10px; }
+    h1 .color { color: #f0c27a; }
+    .lede { max-width: 430px; margin-top: 28px; font-size: 1.12rem; line-height: 1.45; color: #6d564c; }
+    .pills { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 28px; }
+    .pill { display: inline-flex; align-items: center; gap: 8px; background: #fff; border-radius: 999px; padding: 8px 14px; font-weight: 800; color: #6a5146; box-shadow: 0 6px 16px rgba(122, 86, 68, 0.05); }
+    .sw { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+    .go { display: inline-flex; align-items: center; gap: 10px; margin-top: 34px; background: #7a5644; color: #fffaf6; text-decoration: none; font-weight: 800; border-radius: 999px; padding: 14px 22px; }
+    .card { background: #fff; border-radius: 28px; padding: 22px; box-shadow: 0 18px 40px rgba(122, 86, 68, 0.08); }
+    .msg { display: flex; gap: 12px; align-items: flex-start; }
+    .face { width: 42px; height: 42px; border-radius: 50%; background: #f6e2c4; display: grid; place-items: center; font-size: 1.3rem; flex: none; }
+    .bubble { background: #fdeff2; color: #6a5146; border-radius: 18px; padding: 14px 16px; line-height: 1.4; font-weight: 700; }
+    .overview { margin: 22px 4px 12px; font-weight: 800; color: #6a5146; }
+    .analysis { background: #fbf6ef; border-radius: 18px; padding: 16px 16px 12px; }
+    .analysis h2 { font-family: "Fraunces", serif; font-weight: 560; color: #7a5644; font-size: 1.35rem; margin-bottom: 14px; }
+    .bars { height: 168px; display: flex; align-items: flex-end; justify-content: space-around; gap: 18px; padding: 0 12px; }
+    .col { width: 64px; text-align: center; }
+    .bar { border-radius: 10px; width: 64px; }
+    .col span { display: block; margin-top: 8px; font-weight: 800; color: #6a5146; font-size: 0.92rem; }
+    @media (max-width: 860px) {
+      header { justify-content: center; }
+      nav { gap: 12px; flex-wrap: wrap; justify-content: center; }
+      .hero { grid-template-columns: 1fr; padding: 32px 20px 48px; }
+      .dots, .heart, .star, .orb { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wash"></div>
+  <div class="orb"></div>
+  <div class="blob blob-tl"></div>
+  <div class="blob blob-bl"></div>
+  <div class="blob blob-br"></div>
+  <div class="dots dots-tr"></div>
+  <div class="dots dots-bl"></div>
+  <div class="heart">♡</div>
+  <div class="star">✦</div>
+
+  <header>
+    <nav>
+      <a href="#features">Features</a>
+      <a href="#how">How it works</a>
+      <a href="#pricing">Pricing</a>
+      <a class="signin" href="/login">Sign in</a>
+      <a class="create" href="/signup">Create an account</a>
+    </nav>
+  </header>
+
+  <main class="hero">
+    <div>
+      <h1>Track expenses<br><span class="in">in</span><span class="color">color.</span></h1>
+      <p class="lede">See where your money goes with beautiful, color-coded insights that make budgeting feel easy and joyful.</p>
+      <div class="pills">
+        <span class="pill"><i class="sw" style="background:#f3b4c6"></i> Food</span>
+        <span class="pill"><i class="sw" style="background:#f0c84a"></i> Travel</span>
+        <span class="pill"><i class="sw" style="background:#a97856"></i> Study</span>
+        <span class="pill"><i class="sw" style="background:#f6c9d6"></i> Fun</span>
+      </div>
+      <a class="go" href="/signup">Create your free account →</a>
+    </div>
+
+    <aside class="card">
+      <div class="msg">
+        <div class="face">☺</div>
+        <p class="bubble">Hi! I’m your AI financial assistant. I’ve analyzed your expenses and found some gentle insights to help you spend mindfully. ♡</p>
+      </div>
+      <p class="overview">Here’s a quick overview:</p>
+      <div class="analysis">
+        <h2>AI analysis</h2>
+        <div class="bars">
+          <div class="col"><div class="bar" style="height:132px;background:#f4b7c8"></div><span>Food</span></div>
+          <div class="col"><div class="bar" style="height:108px;background:#f3d56a"></div><span>Travel</span></div>
+          <div class="col"><div class="bar" style="height:84px;background:#a56b45"></div><span>Study</span></div>
+          <div class="col"><div class="bar" style="height:58px;background:#f6d5de"></div><span>Fun</span></div>
+        </div>
+      </div>
+    </aside>
+  </main>
+</body>
 </html>
