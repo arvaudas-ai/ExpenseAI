@@ -3,189 +3,142 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bloom — expenses, in your colors</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet" />
+  <title>ExpenseAI - Smart Expense Tracker</title>
   <style>
     :root {
-      --pink: #f7c9d4;
-      --pink-deep: #e7a8b8;
-      --blush: #fff1f4;
-      --yellow: #ffe7a3;
-      --yellow-deep: #f3d27a;
-      --cream: #fffaf3;
-      --brown: #7a5640;
-      --brown-soft: #a67c5d;
-      --ink: #4a3428;
-      --card: rgba(255, 250, 246, 0.78);
+      --primary: #4F46E5;
+      --primary-hover: #4338CA;
+      --bg: #0F172A;
+      --surface: #1E293B;
+      --text: #F8FAFC;
+      --text-muted: #94A3B8;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      font-family: "Nunito", sans-serif;
-      color: var(--ink);
-      background:
-        radial-gradient(900px 520px at -10% -10%, #ffd6e2 0%, transparent 60%),
-        radial-gradient(800px 480px at 110% 0%, #ffe7ad 0%, transparent 55%),
-        radial-gradient(700px 500px at 80% 100%, #f3d3c4 0%, transparent 50%),
-        linear-gradient(165deg, #fff8f4 0%, #fff3ea 45%, #fdeff3 100%);
-      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
     }
-    .blob { position: fixed; z-index: 0; border-radius: 50%; filter: blur(2px); pointer-events: none; }
-    .blob-a { width: 280px; height: 280px; background: #f8cddd; top: 120px; left: -80px; opacity: 0.7; }
-    .blob-b { width: 220px; height: 220px; background: #ffe3a1; top: 40px; right: 8%; opacity: 0.8; }
-    .blob-c { width: 180px; height: 180px; background: #e7c2ae; bottom: 40px; left: 18%; opacity: 0.55; }
-    header, main, footer { position: relative; z-index: 1; }
-    header { max-width: 1120px; margin: 0 auto; padding: 22px 24px; display: flex; align-items: center; justify-content: space-between; }
-    .brand { display: flex; align-items: center; gap: 10px; font-family: "Fraunces", serif; font-size: 1.45rem; color: var(--brown); }
-    .mark { width: 36px; height: 36px; border-radius: 12px; background: linear-gradient(140deg, var(--pink) 0%, var(--yellow) 100%); box-shadow: 0 8px 16px rgba(122, 86, 64, 0.12); }
-    nav { display: flex; gap: 10px; }
-    .btn { border: none; cursor: pointer; text-decoration: none; border-radius: 999px; padding: 12px 20px; font-family: inherit; font-weight: 800; font-size: 0.95rem; }
-    .btn-ghost { background: transparent; color: var(--brown); }
-    .btn-solid { background: var(--brown); color: #fff8f3; box-shadow: 0 10px 20px rgba(122, 86, 64, 0.18); }
-    .btn-solid:hover { background: #624432; }
-    .btn-soft { background: #fff; color: var(--brown); border: 1.5px solid #efd7c8; }
-    .hero { max-width: 1120px; margin: 0 auto; padding: 28px 24px 10px; display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 36px; align-items: center; }
-    .eyebrow { display: inline-flex; align-items: center; gap: 8px; background: #fff; border-radius: 999px; padding: 7px 12px; color: var(--brown-soft); font-weight: 800; font-size: 0.82rem; }
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--pink-deep); }
-    h1 { font-family: "Fraunces", serif; font-size: clamp(2.4rem, 5vw, 4.3rem); line-height: 1.02; color: var(--brown); margin: 16px 0 14px; font-weight: 650; }
-    h1 span { color: #c48498; }
-    .lede { font-size: 1.12rem; line-height: 1.6; max-width: 520px; color: #6d5346; }
-    .cta-row { display: flex; gap: 12px; margin-top: 26px; flex-wrap: wrap; }
-    .trust { display: flex; gap: 18px; margin-top: 22px; color: var(--brown-soft); font-weight: 700; font-size: 0.92rem; }
-    .stage { background: var(--card); border: 1px solid rgba(255,255,255,0.8); border-radius: 32px; padding: 18px; box-shadow: 0 24px 50px rgba(122, 86, 64, 0.1); backdrop-filter: blur(8px); }
-    .chat { background: #fff; border-radius: 22px; padding: 16px; margin-bottom: 12px; }
-    .chat-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-weight: 800; color: var(--brown); }
-    .pill { background: #fff4cc; color: #8a6a32; border-radius: 999px; padding: 4px 10px; font-size: 0.75rem; }
-    .bubble { border-radius: 16px; padding: 10px 12px; margin-bottom: 8px; line-height: 1.4; font-size: 0.92rem; }
-    .me { background: #ffe7ef; margin-left: 36px; }
-    .ai { background: #fff6dc; margin-right: 28px; }
-    .cats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .cat { background: #fff; border-radius: 16px; padding: 10px 12px; display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 0.9rem; }
-    .swatch { width: 14px; height: 14px; border-radius: 50%; }
-    section { max-width: 1120px; margin: 0 auto; padding: 34px 24px; }
-    .section-title { font-family: "Fraunces", serif; font-size: clamp(1.8rem, 3vw, 2.6rem); color: var(--brown); margin-bottom: 8px; }
-    .section-copy { color: #6d5346; max-width: 640px; line-height: 1.55; margin-bottom: 22px; }
-    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-    .card { background: rgba(255,255,255,0.72); border-radius: 26px; padding: 22px; border: 1px solid rgba(255,255,255,0.9); box-shadow: 0 12px 30px rgba(122, 86, 64, 0.06); }
-    .card h3 { font-family: "Fraunces", serif; font-size: 1.4rem; margin: 12px 0 8px; color: var(--brown); }
-    .card p { color: #6d5346; line-height: 1.55; }
-    .icon { width: 48px; height: 48px; border-radius: 16px; display: grid; place-items: center; font-size: 1.3rem; }
-    .icon-pink { background: #ffd9e4; }
-    .icon-yellow { background: #ffe8b0; }
-    .icon-brown { background: #f0d7c8; }
-    .why { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 18px; }
-    .panel { background: linear-gradient(160deg, #fff 0%, #fff6f8 100%); border-radius: 28px; padding: 26px; }
-    .panel li { margin: 12px 0 12px 18px; color: #6d5346; line-height: 1.45; }
-    .analysis { background: #fffaf2; border-radius: 28px; padding: 22px; }
-    .bars { display: flex; align-items: flex-end; gap: 12px; height: 160px; margin-top: 18px; }
-    .bar { flex: 1; border-radius: 14px 14px 6px 6px; display: flex; align-items: flex-end; justify-content: center; color: var(--brown); font-size: 0.75rem; font-weight: 800; padding-bottom: 8px; }
-    .final { margin: 10px auto 40px; max-width: 1120px; background: linear-gradient(120deg, #f8d5df, #ffe7ae 55%, #f0d3c3); border-radius: 32px; padding: 36px 28px; text-align: center; }
-    .final h2 { font-family: "Fraunces", serif; font-size: clamp(1.8rem, 3vw, 2.7rem); color: var(--brown); margin-bottom: 8px; }
-    .final p { color: #6a4d3e; margin-bottom: 18px; }
-    footer { text-align: center; color: var(--brown-soft); padding: 8px 16px 28px; font-size: 0.88rem; }
-    @media (max-width: 860px) {
-      .hero, .grid, .why { grid-template-columns: 1fr; }
-      nav .btn-ghost { display: none; }
+
+    /* Header Navigation */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .logo span {
+      color: var(--primary);
+    }
+
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 2rem;
+    }
+
+    nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    nav a:hover {
+      color: var(--text);
+    }
+
+    /* Hero Section */
+    .hero {
+      max-width: 800px;
+      margin: 5rem auto;
+      text-align: center;
+      padding: 0 1rem;
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+
+    .cta-button {
+      display: inline-block;
+      background-color: var(--primary);
+      color: white;
+      padding: 0.875rem 2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background-color 0.2s;
+    }
+
+    .cta-button:hover {
+      background-color: var(--primary-hover);
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 3rem 1rem;
+      border-top: 1px solid var(--surface);
+      color: var(--text-muted);
+      margin-top: 5rem;
     }
   </style>
 </head>
 <body>
-  <div class="blob blob-a"></div>
-  <div class="blob blob-b"></div>
-  <div class="blob blob-c"></div>
 
+  <!-- Header Section (Without additional Auth buttons) -->
   <header>
-    <div class="brand"><span class="mark"></span> ExpenseAI</div>
+    <a href="#" class="logo">Expense<span>AI</span></a>
     <nav>
-      <a class="btn btn-ghost" href="#features">Features</a>
-      <a class="btn btn-soft" href="/login">Sign in</a>
-      <a class="btn btn-solid" href="/register">Create an account</a>
+      <ul>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
     </nav>
   </header>
 
-  <main>
-    <section class="hero">
-      <div>
-        <div class="eyebrow"><span class="dot"></span> A kinder way to track money</div>
-        <h1>See your spending in <span>soft color</span>, with AI beside you.</h1>
-        <p class="lede">ExpenseAI keeps every expense in the category color you choose, then helps you understand it. Ask the chat assistant a question, or open AI Analysis for a clear picture of where your money went.</p>
-        <div class="cta-row">
-          <a class="btn btn-solid" href="/register">Create an account</a>
-          <a class="btn btn-soft" href="/login">Sign in</a>
-        </div>
-        <div class="trust">
-          <span>Your colors</span>
-          <span>AI chat</span>
-          <span>AI analysis</span>
-        </div>
-      </div>
-      <div class="stage">
-        <div class="chat">
-          <div class="chat-top">AI financial chat <span class="pill">assistant</span></div>
-          <div class="bubble me">How much did I spend on food this week?</div>
-          <div class="bubble ai">Food is your pink category: 640 this week, a little under last week. Snacks were the biggest part.</div>
-        </div>
-        <div class="cats">
-          <div class="cat"><span class="swatch" style="background:#f4b4c4"></span> Food</div>
-          <div class="cat"><span class="swatch" style="background:#ffe08a"></span> Travel</div>
-          <div class="cat"><span class="swatch" style="background:#e7c3a8"></span> Study</div>
-          <div class="cat"><span class="swatch" style="background:#f7d7cf"></span> Fun</div>
-        </div>
-      </div>
-    </section>
-
-    <section id="features">
-      <h2 class="section-title">Why open ExpenseAI</h2>
-      <p class="section-copy">The first screen should tell you what the app does. These are the three reasons to make an account.</p>
-      <div class="grid">
-        <article class="card">
-          <div class="icon icon-pink">✎</div>
-          <h3>Categories in your colors</h3>
-          <p>Record an expense, pick a category, and give that category a color you like. Food can be pink, travel yellow, study brown. Lists and charts stay sorted by those colors, so a glance is enough.</p>
-        </article>
-        <article class="card">
-          <div class="icon icon-yellow">💬</div>
-          <h3>AI financial chat assistant</h3>
-          <p>Ask in plain words: what did I spend, which category grew, what can I set aside. The assistant answers from your own expenses, not from a blank page.</p>
-        </article>
-        <article class="card">
-          <div class="icon icon-brown">◈</div>
-          <h3>AI analysis</h3>
-          <p>Open Analysis for a calm summary: top categories, a simple trend, and one next step. It is built to be read in a minute, not studied like a spreadsheet.</p>
-        </article>
-      </div>
-    </section>
-
-    <section class="why">
-      <div class="panel">
-        <h2 class="section-title">A reason to use it</h2>
-        <ul>
-          <li>Logging a cost takes one form: amount, category, and the color already attached to that category.</li>
-          <li>Colors are yours. Change them any time and the history keeps the new look.</li>
-          <li>The chat assistant is there when you want an answer, not another chart to decode.</li>
-          <li>AI Analysis turns the week into a short note you can act on.</li>
-        </ul>
-      </div>
-      <div class="analysis">
-        <div class="chat-top">AI analysis <span class="pill">this week</span></div>
-        <p style="color:#6d5346;line-height:1.5;">Pink food is still the largest share. Yellow travel dipped. A small cap on snacks would free the most room.</p>
-        <div class="bars">
-          <div class="bar" style="height:92%;background:#f4b4c4;">Food</div>
-          <div class="bar" style="height:58%;background:#ffe08a;">Travel</div>
-          <div class="bar" style="height:46%;background:#e7c3a8;">Study</div>
-          <div class="bar" style="height:34%;background:#f7d7cf;">Fun</div>
-        </div>
-      </div>
-    </section>
-
-    <div class="final">
-      <h2>Start with a color, not a blank form.</h2>
-      <p>Create an account to record expenses, ask the assistant, and read your AI analysis.</p>
-      <a class="btn btn-solid" href="/register">Create an account</a>
-    </div>
+  <!-- Hero Section -->
+  <main class="hero">
+    <h1>Track Your Expenses Effortlessly with AI</h1>
+    <p>Automatically classify transactions, get spending insights, and stay on top of your financial goals.</p>
+    <a href="#" class="cta-button">Get Started Free</a>
   </main>
-  <footer>Created By Arva Udas
+
+  <footer>
+    <p>&copy; Created By Arva Udas.</p>
+  </footer>
+
 </body>
 </html>
+ 
 
