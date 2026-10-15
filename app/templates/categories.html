@@ -5,6 +5,443 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Manage Categories | ExpenseAI</title>
     <link rel="stylesheet" href="/static/css/styles.css" />
+
+    <style>
+      /* ExpenseAI Categories — exact warm pastel palette from the homepage reference */
+      :root {
+        --cat-cream: #FBF7EF;
+        --cat-white: #FFFFFF;
+        --cat-brown: #795747;
+        --cat-brown-dark: #624638;
+        --cat-pink: #F2B8C8;
+        --cat-pink-soft: #FCECF0;
+        --cat-yellow: #F2D15B;
+        --cat-yellow-soft: #FFF1C8;
+        --cat-taupe: #AD8068;
+        --cat-text: #795747;
+        --cat-muted: #92796D;
+        --cat-border: #F0E5D9;
+        --cat-shadow: 0 12px 32px rgba(121, 87, 71, .08);
+      }
+
+      body {
+        background:
+          radial-gradient(ellipse at 4% 10%, rgba(242,184,200,.45), transparent 28rem),
+          radial-gradient(ellipse at 98% 76%, rgba(242,209,91,.24), transparent 25rem),
+          var(--cat-cream);
+        color: var(--cat-text);
+      }
+
+      .page-shell[data-page="categories"] {
+        width: min(1160px, calc(100% - 40px));
+        margin: 0 auto;
+        padding: clamp(24px, 4vw, 52px) 0 64px;
+      }
+
+      [data-page="categories"] .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 24px;
+      }
+
+      [data-page="categories"] .eyebrow {
+        margin: 0 0 8px;
+        color: var(--cat-taupe);
+        font-size: .76rem;
+        font-weight: 800;
+        letter-spacing: .15em;
+        text-transform: uppercase;
+      }
+
+      [data-page="categories"] h1,
+      [data-page="categories"] h2 {
+        color: var(--cat-brown);
+        font-family: Georgia, "Times New Roman", serif;
+        font-weight: 700;
+        letter-spacing: -.035em;
+      }
+
+      [data-page="categories"] h1 {
+        margin: 0;
+        font-size: clamp(2.6rem, 5vw, 4.3rem);
+        line-height: 1.05;
+      }
+
+      [data-page="categories"] h2 {
+        margin: 0;
+        font-size: clamp(1.55rem, 2.5vw, 2.1rem);
+      }
+
+      [data-page="categories"] .page-subtitle {
+        margin: 12px 0 0;
+        color: var(--cat-muted);
+        font-size: 1rem;
+        line-height: 1.7;
+      }
+
+      [data-page="categories"] .app-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 9px;
+        margin: 0 0 26px;
+        border: 1px solid rgba(121,87,71,.08);
+        border-radius: 24px;
+        background: rgba(255,255,255,.82);
+        box-shadow: 0 8px 26px rgba(121,87,71,.04);
+        backdrop-filter: blur(12px);
+      }
+
+      [data-page="categories"] .app-nav a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 15px;
+        border-radius: 999px;
+        color: var(--cat-brown);
+        font-size: .92rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: background .2s ease, transform .2s ease;
+      }
+
+      [data-page="categories"] .app-nav a:hover {
+        background: var(--cat-pink-soft);
+        transform: translateY(-1px);
+      }
+
+      [data-page="categories"] .app-nav a.active {
+        background: var(--cat-brown);
+        color: var(--cat-white);
+      }
+
+      [data-page="categories"] .page-panel {
+        position: relative;
+        overflow: hidden;
+        padding: clamp(22px, 3.2vw, 36px);
+        margin: 0 0 24px;
+        border: 1px solid rgba(255,255,255,.9);
+        border-radius: 28px;
+        background: rgba(255,255,255,.9);
+        box-shadow: var(--cat-shadow);
+      }
+
+      [data-page="categories"] .page-panel::before {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(90deg, var(--cat-pink), var(--cat-yellow), var(--cat-taupe));
+        content: "";
+      }
+
+      [data-page="categories"] .panel-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 26px;
+      }
+
+      [data-page="categories"] .panel-stat {
+        padding: 8px 13px;
+        border: 1px solid #F7E3A1;
+        border-radius: 999px;
+        background: var(--cat-yellow-soft);
+        color: var(--cat-brown);
+        font-size: .78rem;
+        font-weight: 750;
+        white-space: nowrap;
+      }
+
+      [data-page="categories"] .category-form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 22px;
+        align-items: end;
+      }
+
+      [data-page="categories"] .field-group {
+        display: flex;
+        min-width: 0;
+        flex-direction: column;
+        gap: 9px;
+      }
+
+      [data-page="categories"] .field-group label {
+        color: var(--cat-brown);
+        font-size: .9rem;
+        font-weight: 750;
+      }
+
+      [data-page="categories"] input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),
+      [data-page="categories"] select,
+      #edit-modal input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),
+      #edit-modal select,
+      #edit-modal textarea {
+        box-sizing: border-box;
+        width: 100%;
+        min-height: 49px;
+        padding: 12px 14px;
+        border: 1px solid var(--cat-border);
+        border-radius: 15px;
+        background: #FFFEFC;
+        color: var(--cat-brown);
+        font: inherit;
+        transition: border-color .2s ease, box-shadow .2s ease;
+      }
+
+      [data-page="categories"] input:focus,
+      [data-page="categories"] select:focus,
+      #edit-modal input:focus,
+      #edit-modal select:focus,
+      #edit-modal textarea:focus {
+        border-color: var(--cat-pink);
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(242,184,200,.28);
+      }
+
+      [data-page="categories"] .color-picker-wrapper {
+        padding: 12px 14px;
+        border: 1px solid var(--cat-border);
+        border-radius: 17px;
+        background: var(--cat-cream);
+      }
+
+      [data-page="categories"] .color-palette {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      [data-page="categories"] .color-option {
+        position: relative;
+        width: 31px;
+        height: 31px;
+        min-width: 31px;
+        padding: 0;
+        border: 3px solid #fff;
+        border-radius: 50%;
+        box-shadow: 0 0 0 1px rgba(121,87,71,.16);
+        cursor: pointer;
+        transition: transform .18s ease, box-shadow .18s ease;
+      }
+
+      [data-page="categories"] .color-option:hover {
+        transform: scale(1.12);
+      }
+
+      [data-page="categories"] .color-option.selected,
+      [data-page="categories"] .color-option[aria-pressed="true"] {
+        box-shadow: 0 0 0 2px var(--cat-brown), 0 4px 10px rgba(121,87,71,.15);
+        transform: scale(1.08);
+      }
+
+      [data-page="categories"] button.primary,
+      [data-page="categories"] button.secondary,
+      [data-page="categories"] button.danger,
+      [data-page="categories"] #logout-btn,
+      #edit-modal button {
+        min-height: 45px;
+        padding: 11px 18px;
+        border: 0;
+        border-radius: 999px;
+        font: inherit;
+        font-weight: 750;
+        cursor: pointer;
+        transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+      }
+
+      [data-page="categories"] button.primary,
+      #edit-modal button.primary {
+        background: var(--cat-brown);
+        color: #fff;
+        box-shadow: 0 8px 18px rgba(121,87,71,.16);
+      }
+
+      [data-page="categories"] button.primary:hover,
+      #edit-modal button.primary:hover {
+        background: var(--cat-brown-dark);
+        box-shadow: 0 11px 22px rgba(121,87,71,.2);
+        transform: translateY(-1px);
+      }
+
+      [data-page="categories"] button.secondary,
+      [data-page="categories"] #logout-btn,
+      #edit-modal button.secondary {
+        border: 1px solid #F1E1C8;
+        background: var(--cat-yellow-soft);
+        color: var(--cat-brown);
+      }
+
+      [data-page="categories"] button.secondary:hover,
+      [data-page="categories"] #logout-btn:hover,
+      #edit-modal button.secondary:hover {
+        background: #F9E7A6;
+        transform: translateY(-1px);
+      }
+
+      [data-page="categories"] button.danger,
+      #edit-modal button.danger {
+        background: var(--cat-pink-soft);
+        color: #8B4D5B;
+      }
+
+      [data-page="categories"] button.danger:hover,
+      #edit-modal button.danger:hover {
+        background: #F7DCE4;
+      }
+
+      [data-page="categories"] #create-category-btn {
+        justify-self: start;
+        min-width: 190px;
+        min-height: 49px;
+      }
+
+      [data-page="categories"] .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+      }
+
+      [data-page="categories"] .categories-grid > * {
+        min-width: 0;
+      }
+
+      [data-page="categories"] .loading-message {
+        color: var(--cat-muted);
+        line-height: 1.6;
+      }
+
+      [data-page="categories"] .form-message {
+        margin: 0 0 18px;
+        border-radius: 15px;
+      }
+
+      [data-page="categories"] button:focus-visible,
+      [data-page="categories"] a:focus-visible,
+      #edit-modal button:focus-visible {
+        outline: 3px solid var(--cat-yellow);
+        outline-offset: 3px;
+      }
+
+      #edit-modal.modal:not([hidden]) {
+        position: fixed;
+        z-index: 1000;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        overflow-y: auto;
+        padding: 22px;
+        background: rgba(98,70,56,.42);
+        backdrop-filter: blur(7px);
+      }
+
+      #edit-modal .modal-content {
+        box-sizing: border-box;
+        width: min(560px, 100%);
+        max-height: calc(100vh - 44px);
+        overflow-y: auto;
+        padding: clamp(22px, 4vw, 34px);
+        border: 1px solid rgba(255,255,255,.9);
+        border-radius: 28px;
+        background: var(--cat-white);
+        box-shadow: 0 24px 80px rgba(98,70,56,.22);
+      }
+
+      #edit-modal .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 22px;
+      }
+
+      #edit-modal .modal-header h2 {
+        margin: 0;
+        color: var(--cat-brown);
+        font-family: Georgia, "Times New Roman", serif;
+      }
+
+      #edit-modal .modal-close {
+        display: inline-grid;
+        width: 40px;
+        min-width: 40px;
+        height: 40px;
+        min-height: 40px;
+        place-items: center;
+        padding: 0;
+        background: var(--cat-pink-soft);
+        color: var(--cat-brown);
+        font-size: 1.5rem;
+      }
+
+      #edit-modal #edit-category-form {
+        display: grid;
+        gap: 20px;
+      }
+
+      #edit-modal .modal-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 4px;
+      }
+
+      @media (max-width: 680px) {
+        .page-shell[data-page="categories"] {
+          width: min(100% - 28px, 1160px);
+          padding-top: 24px;
+        }
+
+        [data-page="categories"] .page-header {
+          align-items: flex-start;
+        }
+
+        [data-page="categories"] h1 {
+          font-size: clamp(2.5rem, 12vw, 3.5rem);
+        }
+
+        [data-page="categories"] .category-form-grid {
+          grid-template-columns: minmax(0, 1fr);
+        }
+
+        [data-page="categories"] .panel-heading {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        [data-page="categories"] .app-nav {
+          gap: 5px;
+        }
+
+        [data-page="categories"] .app-nav a {
+          padding: 9px 11px;
+          font-size: .84rem;
+        }
+
+        [data-page="categories"] #create-category-btn {
+          width: 100%;
+        }
+
+        [data-page="categories"] .categories-grid {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        [data-page="categories"] *,
+        #edit-modal * {
+          scroll-behavior: auto !important;
+          transition-duration: .01ms !important;
+          animation-duration: .01ms !important;
+        }
+      }
+    </style>
+
   </head>
   <body>
     <main class="page-shell" data-page="categories">
@@ -66,20 +503,20 @@
           <div class="field-group">
             <label for="category-color">Color</label>
             <div class="color-picker-wrapper">
-              <input id="category-color" name="color" type="hidden" required value="#FF6B6B" />
+              <input id="category-color" name="color" type="hidden" required value="#F2B8C8" />
               <div id="color-palette" class="color-palette">
-                <button type="button" class="color-option" data-color="#FF6B6B" style="background-color: #FF6B6B;" title="Red"></button>
-                <button type="button" class="color-option" data-color="#FF8A65" style="background-color: #FF8A65;" title="Orange"></button>
-                <button type="button" class="color-option" data-color="#FFD93D" style="background-color: #FFD93D;" title="Yellow"></button>
-                <button type="button" class="color-option" data-color="#6BCB77" style="background-color: #6BCB77;" title="Green"></button>
-                <button type="button" class="color-option" data-color="#4D96FF" style="background-color: #4D96FF;" title="Blue"></button>
-                <button type="button" class="color-option" data-color="#9B59B6" style="background-color: #9B59B6;" title="Purple"></button>
-                <button type="button" class="color-option" data-color="#E74C3C" style="background-color: #E74C3C;" title="Dark Red"></button>
-                <button type="button" class="color-option" data-color="#3498DB" style="background-color: #3498DB;" title="Bright Blue"></button>
-                <button type="button" class="color-option" data-color="#2ECC71" style="background-color: #2ECC71;" title="Bright Green"></button>
-                <button type="button" class="color-option" data-color="#E91E63" style="background-color: #E91E63;" title="Pink"></button>
-                <button type="button" class="color-option" data-color="#00BCD4" style="background-color: #00BCD4;" title="Cyan"></button>
-                <button type="button" class="color-option" data-color="#795548" style="background-color: #795548;" title="Brown"></button>
+                <button type="button" class="color-option" data-color="#F2B8C8" style="background-color: #F2B8C8;" title="Soft pink"></button>
+                <button type="button" class="color-option" data-color="#F7DCE4" style="background-color: #F7DCE4;" title="Blush pink"></button>
+                <button type="button" class="color-option" data-color="#F2D15B" style="background-color: #F2D15B;" title="Golden yellow"></button>
+                <button type="button" class="color-option" data-color="#F9E7A6" style="background-color: #F9E7A6;" title="Butter yellow"></button>
+                <button type="button" class="color-option" data-color="#AD8068" style="background-color: #AD8068;" title="Warm taupe"></button>
+                <button type="button" class="color-option" data-color="#795747" style="background-color: #795747;" title="Warm brown"></button>
+                <button type="button" class="color-option" data-color="#EBCBD5" style="background-color: #EBCBD5;" title="Rose"></button>
+                <button type="button" class="color-option" data-color="#EADFD0" style="background-color: #EADFD0;" title="Beige"></button>
+                <button type="button" class="color-option" data-color="#DCC7B8" style="background-color: #DCC7B8;" title="Warm beige"></button>
+                <button type="button" class="color-option" data-color="#D9B9A7" style="background-color: #D9B9A7;" title="Dusty peach"></button>
+                <button type="button" class="color-option" data-color="#FCECF0" style="background-color: #FCECF0;" title="Pale pink"></button>
+                <button type="button" class="color-option" data-color="#624638" style="background-color: #624638;" title="Deep brown"></button>
               </div>
             </div>
           </div>
@@ -153,19 +590,19 @@
             <div class="color-picker-wrapper">
               <input id="edit-category-color" name="color" type="hidden" required />
               <div id="edit-color-palette" class="color-palette">
-                <button type="button" class="color-option" data-color="#FF6B6B" style="background-color: #FF6B6B;" title="Red"></button>
-                <button type="button" class="color-option" data-color="#FF8A65" style="background-color: #FF8A65;" title="Orange"></button>
-                <button type="button" class="color-option" data-color="#FFD93D" style="background-color: #FFD93D;" title="Yellow"></button>
-                <button type="button" class="color-option" data-color="#6BCB77" style="background-color: #6BCB77;" title="Green"></button>
-                <button type="button" class="color-option" data-color="#4D96FF" style="background-color: #4D96FF;" title="Blue"></button>
-                <button type="button" class="color-option" data-color="#9B59B6" style="background-color: #9B59B6;" title="Purple"></button>
-                <button type="button" class="color-option" data-color="#E74C3C" style="background-color: #E74C3C;" title="Dark Red"></button>
-                <button type="button" class="color-option" data-color="#3498DB" style="background-color: #3498DB;" title="Bright Blue"></button>
-                <button type="button" class="color-option" data-color="#2ECC71" style="background-color: #2ECC71;" title="Bright Green"></button>
-                <button type="button" class="color-option" data-color="#E91E63" style="background-color: #E91E63;" title="Pink"></button>
-                <button type="button" class="color-option" data-color="#00BCD4" style="background-color: #00BCD4;" title="Cyan"></button>
-                <button type="button" class="color-option" data-color="#795548" style="background-color: #795548;" title="Brown"></button>
-              </div>
+                <button type="button" class="color-option" data-color="#F2B8C8" style="background-color: #F2B8C8;" title="Soft pink"></button>
+                <button type="button" class="color-option" data-color="#F7DCE4" style="background-color: #F7DCE4;" title="Blush pink"></button>
+                <button type="button" class="color-option" data-color="#F2D15B" style="background-color: #F2D15B;" title="Golden yellow"></button>
+                <button type="button" class="color-option" data-color="#F9E7A6" style="background-color: #F9E7A6;" title="Butter yellow"></button>
+                <button type="button" class="color-option" data-color="#AD8068" style="background-color: #AD8068;" title="Warm taupe"></button>
+                <button type="button" class="color-option" data-color="#795747" style="background-color: #795747;" title="Warm brown"></button>
+                <button type="button" class="color-option" data-color="#EBCBD5" style="background-color: #EBCBD5;" title="Rose"></button>
+                <button type="button" class="color-option" data-color="#EADFD0" style="background-color: #EADFD0;" title="Beige"></button>
+                <button type="button" class="color-option" data-color="#DCC7B8" style="background-color: #DCC7B8;" title="Warm beige"></button>
+                <button type="button" class="color-option" data-color="#D9B9A7" style="background-color: #D9B9A7;" title="Dusty peach"></button>
+                <button type="button" class="color-option" data-color="#FCECF0" style="background-color: #FCECF0;" title="Pale pink"></button>
+                <button type="button" class="color-option" data-color="#624638" style="background-color: #624638;" title="Deep brown"></button>
+                </div>
             </div>
           </div>
 
